@@ -2,5 +2,6 @@
     <string name="app_name">A8Project</string>
     <string name="game_name">Crazy Ball</string>
     <string name="start_play_button">Start Play</string>
+    <string name="high_score_button">High Score</string>
     <string name="author">Author: Jiaming Zhang, Zhe Wang</string>
 </resources>

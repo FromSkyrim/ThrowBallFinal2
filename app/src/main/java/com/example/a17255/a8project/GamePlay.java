@@ -6,11 +6,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
 public class GamePlay extends AppCompatActivity {
+
+
 
 
 //    Create my own view class
@@ -20,6 +23,8 @@ public class GamePlay extends AppCompatActivity {
             super(context);
         }
 
+        float x, y;
+
 //        Draw a red ball
         @Override
         protected void onDraw(Canvas canvas) {
@@ -27,12 +32,18 @@ public class GamePlay extends AppCompatActivity {
 
             Paint paint = new Paint();
             paint.setColor(Color.RED);
-            canvas.drawCircle(100, 100, 50, paint);
+            canvas.drawCircle(x, y, 50, paint);
         }
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            return super.onTouchEvent(event);
+//            Log.d("204", event.actionToString(event.getAction()));
+            x = event.getX();
+            y = event.getY();
+
+            invalidate();
+            return true;
+
         }
     }
 

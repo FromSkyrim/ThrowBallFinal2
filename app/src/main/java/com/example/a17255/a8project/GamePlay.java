@@ -4,44 +4,103 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-public class GamePlay extends AppCompatActivity {
+public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
+
+    float x, y;
+    float firstX, firstY;
+
+    MyCanvas myCanvas;
+
+    GestureDetectorCompat gestureDetectorCompat;
+
+
+//    The method needed for implementing gesture listener
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+        firstX = motionEvent.getX();
+        firstY = motionEvent.getY();
+
+        x = firstX;
+        y = firstY;
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        Log.d("zjm", "OnScroll event received");
+
+
+        x -= v;
+        y -= v1;
+        myCanvas.invalidate();
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        Log.d("zjm", "V on x :" + v);
+        Log.d("zjm", "V on y :" + v1);
+
+        return false;
+    }
 
 
 
-
-//    Create my own view class
+    //    Create my own view class
     class MyCanvas extends View {
 
         public MyCanvas(Context context) {
             super(context);
         }
 
-        float x, y;
 
-//        Draw a red ball
+
+//        Draw a red ball at the location of that touch
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
             Paint paint = new Paint();
             paint.setColor(Color.RED);
+
+
             canvas.drawCircle(x, y, 50, paint);
         }
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-//            Log.d("204", event.actionToString(event.getAction()));
-            x = event.getX();
-            y = event.getY();
+//            firstX = event.getX();
+//            firstY = event.getY();
 
-            invalidate();
+            Log.d("zjm", "OnTouch event received");
+
+//            invalidate();
+            gestureDetectorCompat.onTouchEvent(event);
             return true;
 
         }
@@ -56,9 +115,12 @@ public class GamePlay extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        myCanvas = new MyCanvas(this);
 
 //        setContentView(R.layout.activity_game_play);
-        setContentView(new MyCanvas(this));
+        setContentView(myCanvas);
+
+        gestureDetectorCompat = new GestureDetectorCompat(this, this);
     }
 
 }

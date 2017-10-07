@@ -49,7 +49,6 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         Log.d("zjm", "OnScroll event received");
 
-
         x -= v;
         y -= v1;
         myCanvas.invalidate();
@@ -63,8 +62,13 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d("zjm", "V on x :" + v);
-        Log.d("zjm", "V on y :" + v1);
+        Log.d("zjm", "V on x :" + v + "Event1 : " + motionEvent.toString());
+        Log.d("zjm", "V on y :" + v1 + "Event2 : " + motionEvent1.toString());
+
+        x -= v/100;
+        y -= v1/100;
+
+        myCanvas.invalidate();
 
         return false;
     }
@@ -97,9 +101,12 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 //            firstX = event.getX();
 //            firstY = event.getY();
 
+//            x = event.getX();
+//            y = event.getY();
+
             Log.d("zjm", "OnTouch event received");
 
-//            invalidate();
+            invalidate();
             gestureDetectorCompat.onTouchEvent(event);
             return true;
 

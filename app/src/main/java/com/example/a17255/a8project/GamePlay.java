@@ -12,11 +12,16 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
+    TextView textView;
+
     float mCurrentX, mCurrentY;
     float firstX, firstY, currentSpeedX, currentSpeedY;
+    int score = 0;
+    GraphicsItem ball;
 
     MyCanvas myCanvas;
 
@@ -76,6 +81,8 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         private Paint paint;
         private final int FRAME_PER_SECOND = 60;
         private final int DURATION_PER_FRAME_IN_MS = Math.round(1000 / FRAME_PER_SECOND);
+        private final int SCORE_LOCATION_X = 50;
+        private final int SCORE_LOCATION_Y = 50;
 
         private final int BALL_RADIUS = 50;
 
@@ -96,11 +103,38 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                 drawBall(canvas);
             } else {
 
-                mCurrentX = mCurrentX + currentSpeedX / 1000 * DURATION_PER_FRAME_IN_MS;
-                mCurrentY = mCurrentY + currentSpeedY / 1000 * DURATION_PER_FRAME_IN_MS;
+//                detect screen bound and change direction when reach screen bound
+                if (mCurrentX > canvas.getWidth()) {
+                    score += 5;
+                    currentSpeedX = -currentSpeedX;
+                }
+                if (mCurrentX < 0) {
+                    score += 5;
+                    currentSpeedX = -currentSpeedX;
+                }
+                if (mCurrentY > canvas.getHeight()) {
+                    score += 5;
+                    currentSpeedY = -currentSpeedY;
+                }
+                if (mCurrentY < 0) {
+                    score += 5;
+                    currentSpeedY = -currentSpeedY;
+                }
+
+//                display score
+                drawScore(canvas);
+
+//                draw ball after fling
+                mCurrentX = mCurrentX + currentSpeedX / 5000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentY = mCurrentY + currentSpeedY / 5000 * DURATION_PER_FRAME_IN_MS;
                 drawBall(canvas);
                 postInvalidateDelayed(DURATION_PER_FRAME_IN_MS);
+
             }
+        }
+
+        private void drawScore(Canvas canvas) {
+            canvas.drawText(Integer.toString(score), SCORE_LOCATION_X, SCORE_LOCATION_Y, paint);
         }
 
         private void drawBall(Canvas canvas) {

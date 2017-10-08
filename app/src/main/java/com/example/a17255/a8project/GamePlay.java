@@ -16,12 +16,12 @@ import android.widget.TextView;
 
 public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
-    TextView textView;
 
     float mCurrentX, mCurrentY;
     float firstX, firstY, currentSpeedX, currentSpeedY;
     int score = 0;
-    GraphicsItem ball;
+    float obstacleX1 = 200, obstacleY1 = 600;
+    float obstacleX2 = 500, obstacleY2 = 400;
 
     MyCanvas myCanvas;
 
@@ -31,8 +31,11 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 //    The method needed for implementing gesture listener
     @Override
     public boolean onDown(MotionEvent motionEvent) {
-        firstX = motionEvent.getX();
-        firstY = motionEvent.getY();
+        if (motionEvent.getY() > 950) {
+            firstX = motionEvent.getX();
+            firstY = motionEvent.getY();
+        }
+
 
         mCurrentX = firstX;
         mCurrentY = firstY;
@@ -67,8 +70,6 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d("zjm", "V on mCurrentX :" + v + "Event1 : " + motionEvent.toString());
-        Log.d("zjm", "V on mCurrentY :" + v1 + "Event2 : " + motionEvent1.toString());
         currentSpeedX = v;
         currentSpeedY = v1;
         return false;
@@ -83,13 +84,24 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         private final int DURATION_PER_FRAME_IN_MS = Math.round(1000 / FRAME_PER_SECOND);
         private final int SCORE_LOCATION_X = 50;
         private final int SCORE_LOCATION_Y = 50;
+        private Paint obstaclePaint1;
+        private Paint obstaclePaint2;
+
 
         private final int BALL_RADIUS = 50;
+        private final int OBSTACLE_RADIUS = 80;
 
         public MyCanvas(Context context) {
             super(context);
             paint = new Paint();
             paint.setColor(Color.RED);
+
+            obstaclePaint1 = new Paint();
+            obstaclePaint1.setColor(Color.GRAY);
+
+            obstaclePaint2 = new Paint();
+            obstaclePaint2.setColor(Color.GRAY);
+
         }
 
 
@@ -99,9 +111,14 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
+//            draw two obstacles
+            drawObstacle(canvas, obstacleX1, obstacleY1, obstaclePaint1);
+            drawObstacle(canvas, obstacleX2, obstacleY2, obstaclePaint2);
+
             if (currentSpeedX == 0 && currentSpeedY == 0) {
                 drawBall(canvas);
             } else {
+
 
 //                detect screen bound and change direction when reach screen bound
                 if (mCurrentX > canvas.getWidth()) {
@@ -121,8 +138,27 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                     currentSpeedY = -currentSpeedY;
                 }
 
+//                detect the collision between the ball and the obstacle
+                if (Math.pow(mCurrentX - obstacleX1, 2) + Math.pow(mCurrentY - obstacleY1, 2) <=
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                    obstaclePaint1.setColor(Color.CYAN);
+                }
+                if (Math.pow(mCurrentX - obstacleX2, 2) + Math.pow(mCurrentY - obstacleY2, 2) <=
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                    obstaclePaint2.setColor(Color.CYAN);
+                }
+                if (Math.pow(mCurrentX - obstacleX1, 2) + Math.pow(mCurrentY - obstacleY1, 2) >
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                    obstaclePaint1.setColor(Color.GRAY);
+                }
+                if (Math.pow(mCurrentX - obstacleX2, 2) + Math.pow(mCurrentY - obstacleY2, 2) >
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                    obstaclePaint2.setColor(Color.GRAY);
+                }
+
 //                display score
                 drawScore(canvas);
+
 
 //                draw ball after fling
                 mCurrentX = mCurrentX + currentSpeedX / 5000 * DURATION_PER_FRAME_IN_MS;
@@ -139,6 +175,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
         private void drawBall(Canvas canvas) {
             canvas.drawCircle(mCurrentX, mCurrentY, BALL_RADIUS, paint);
+        }
+
+        private void drawObstacle(Canvas canvas, float x, float y, Paint paint) {
+            canvas.drawCircle(x, y, OBSTACLE_RADIUS, paint);
         }
 
         @Override

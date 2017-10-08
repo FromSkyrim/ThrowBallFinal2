@@ -15,8 +15,8 @@ import android.view.WindowManager;
 
 public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
-    float x, y;
-    float firstX, firstY;
+    float mCurrentX, mCurrentY;
+    float firstX, firstY, currentSpeedX, currentSpeedY;
 
     MyCanvas myCanvas;
 
@@ -29,8 +29,8 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         firstX = motionEvent.getX();
         firstY = motionEvent.getY();
 
-        x = firstX;
-        y = firstY;
+        mCurrentX = firstX;
+        mCurrentY = firstY;
         return false;
     }
 
@@ -49,8 +49,8 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         Log.d("zjm", "OnScroll event received");
 
-        x -= v;
-        y -= v1;
+        mCurrentX -= v;
+        mCurrentY -= v1;
         myCanvas.invalidate();
         return false;
     }
@@ -62,14 +62,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d("zjm", "V on x :" + v + "Event1 : " + motionEvent.toString());
-        Log.d("zjm", "V on y :" + v1 + "Event2 : " + motionEvent1.toString());
-
-        x -= v/100;
-        y -= v1/100;
-
-        myCanvas.invalidate();
-
+        Log.d("zjm", "V on mCurrentX :" + v + "Event1 : " + motionEvent.toString());
+        Log.d("zjm", "V on mCurrentY :" + v1 + "Event2 : " + motionEvent1.toString());
+        currentSpeedX = v;
+        currentSpeedY = v1;
         return false;
     }
 
@@ -77,9 +73,16 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     //    Create my own view class
     class MyCanvas extends View {
+        private Paint paint;
+        private final int FRAME_PER_SECOND = 60;
+        private final int DURATION_PER_FRAME_IN_MS = Math.round(1000 / FRAME_PER_SECOND);
+
+        private final int BALL_RADIUS = 50;
 
         public MyCanvas(Context context) {
             super(context);
+            paint = new Paint();
+            paint.setColor(Color.RED);
         }
 
 
@@ -89,24 +92,26 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            Paint paint = new Paint();
-            paint.setColor(Color.RED);
+            if (currentSpeedX == 0 && currentSpeedY == 0) {
+                drawBall(canvas);
+            } else {
 
+                mCurrentX = mCurrentX + currentSpeedX / 1000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentY = mCurrentY + currentSpeedY / 1000 * DURATION_PER_FRAME_IN_MS;
+                drawBall(canvas);
+                postInvalidateDelayed(DURATION_PER_FRAME_IN_MS);
+            }
+        }
 
-            canvas.drawCircle(x, y, 50, paint);
+        private void drawBall(Canvas canvas) {
+            canvas.drawCircle(mCurrentX, mCurrentY, BALL_RADIUS, paint);
         }
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-//            firstX = event.getX();
-//            firstY = event.getY();
-
-//            x = event.getX();
-//            y = event.getY();
 
             Log.d("zjm", "OnTouch event received");
 
-            invalidate();
             gestureDetectorCompat.onTouchEvent(event);
             return true;
 

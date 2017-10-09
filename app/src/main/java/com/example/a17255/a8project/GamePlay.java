@@ -1,12 +1,13 @@
 package com.example.a17255.a8project;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +17,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
+import java.util.HashSet;
+import java.util.Set;
 
-    FragmentManager fragmentManager;
-    private final String FRAGMENT_TAG = "fragmentTag";
-    WinDialogFragment winDialogFragment;
+public class GamePlay extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
 
     float mCurrentX, mCurrentY;
@@ -28,9 +28,11 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     int score = 0;
     float obstacleX1 = 200, obstacleY1 = 700;
     float obstacleX2 = 550, obstacleY2 = 400;
-    float obstacleX3 = 280, obstacleY3 = 400;
+    float obstacleX3 = 250, obstacleY3 = 400;
     float obstacleX4 = 550, obstacleY4 = 700;
-    float targetX = 400, targetY = 100;
+    float obstacleX5 = 370, obstacleY5 = 250;
+    float targetX = 350, targetY = 30;
+    int i = 0;
 
     MyCanvas myCanvas;
 
@@ -98,6 +100,7 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         private Paint obstaclePaint2;
         private Paint obstaclePaint3;
         private Paint obstaclePaint4;
+        private Paint obstaclePaint5;
         private Paint targetPaint;
 
 
@@ -121,7 +124,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
             obstaclePaint3.setColor(Color.DKGRAY);
 
             obstaclePaint4 = new Paint();
-            obstaclePaint3.setColor(Color.DKGRAY);
+            obstaclePaint4.setColor(Color.DKGRAY);
+
+            obstaclePaint5 = new Paint();
+            obstaclePaint5.setColor(Color.DKGRAY);
 
             targetPaint = new Paint();
             targetPaint.setColor(Color.GREEN);
@@ -135,11 +141,12 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-//            draw four obstacles and one target
+//            draw five obstacles and one target
             drawObstacle1(canvas, obstacleX1, obstacleY1, obstaclePaint1);
             drawObstacle1(canvas, obstacleX2, obstacleY2, obstaclePaint2);
             drawObstacle2(canvas, obstacleX3, obstacleY3, obstaclePaint3);
             drawObstacle2(canvas, obstacleX4, obstacleY4, obstaclePaint4);
+            drawObstacle2(canvas, obstacleX5, obstacleY5, obstaclePaint5);
             drawTarget(canvas, targetX, targetY, targetPaint);
 
             if (currentSpeedX == 0 && currentSpeedY == 0) {
@@ -149,19 +156,19 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
 //                detect screen bound and change direction when reach screen bound
                 if (mCurrentX > canvas.getWidth()) {
-                    score += 5;
+                    score += 20;
                     currentSpeedX = -currentSpeedX;
                 }
                 if (mCurrentX < 0) {
-                    score += 5;
+                    score += 20;
                     currentSpeedX = -currentSpeedX;
                 }
                 if (mCurrentY > canvas.getHeight()) {
-                    score += 5;
+                    score += 20;
                     currentSpeedY = -currentSpeedY;
                 }
                 if (mCurrentY < 0) {
-                    score += 5;
+                    score += 20;
                     currentSpeedY = -currentSpeedY;
                 }
 
@@ -198,10 +205,12 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                 if (Math.pow(mCurrentX - obstacleX3, 2) + Math.pow(mCurrentY - obstacleY3, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
 //                    change score when collide
-                    score -= 3;
+                    score -= 10;
 //                    slow down when collide
-                    currentSpeedX = Math.abs(currentSpeedX) - 1000;
-                    currentSpeedY = Math.abs(currentSpeedY) - 1000;
+                    currentSpeedX = Math.abs(currentSpeedX);
+                    currentSpeedY = Math.abs(currentSpeedY);
+                    currentSpeedX = Math.abs(currentSpeedX) - 100;
+                    currentSpeedY = Math.abs(currentSpeedY) - 100;
 ////                    stop compelete
 //                    if (currentSpeedX < 1000) {
 //                        currentSpeedX = 0;
@@ -214,10 +223,12 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                 if (Math.pow(mCurrentX - obstacleX4, 2) + Math.pow(mCurrentY - obstacleY4, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
 //                    change score when collide
-                    score -= 3;
+                    score -= 10;
 //                    slow down when collide
-                    currentSpeedX = Math.abs(currentSpeedX) - 1000;
-                    currentSpeedY = Math.abs(currentSpeedY) - 1000;
+                    currentSpeedX = Math.abs(currentSpeedX);
+                    currentSpeedY = Math.abs(currentSpeedY);
+                    currentSpeedX = Math.abs(currentSpeedX) - 100;
+                    currentSpeedY = Math.abs(currentSpeedY) - 100;
 ////                    stop compelete
 //                    if (currentSpeedX < 1000) {
 //                        currentSpeedX = 0;
@@ -227,6 +238,24 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 //                    }
                     obstaclePaint4.setColor(Color.CYAN);
                 }
+                if (Math.pow(mCurrentX - obstacleX5, 2) + Math.pow(mCurrentY - obstacleY5, 2) <=
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+//                    change score when collide
+                    score -= 10;
+//                    slow down when collide
+                    currentSpeedX = Math.abs(currentSpeedX);
+                    currentSpeedY = Math.abs(currentSpeedY);
+                    currentSpeedX = Math.abs(currentSpeedX) - 100;
+                    currentSpeedY = Math.abs(currentSpeedY) - 100;
+////                    stop compelete
+//                    if (currentSpeedX < 1000) {
+//                        currentSpeedX = 0;
+//                    }
+//                    if (currentSpeedY < 1000) {
+//                        currentSpeedY = 0;
+//                    }
+                    obstaclePaint5.setColor(Color.CYAN);
+                }
                 if (Math.pow(mCurrentX - obstacleX3, 2) + Math.pow(mCurrentY - obstacleY3, 2) >
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
                     obstaclePaint3.setColor(Color.DKGRAY);
@@ -235,16 +264,28 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
                     obstaclePaint4.setColor(Color.DKGRAY);
                 }
+                if (Math.pow(mCurrentX - obstacleX5, 2) + Math.pow(mCurrentY - obstacleY5, 2) >
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+                    obstaclePaint5.setColor(Color.DKGRAY);
+                }
 
 
 //                detect the collision between the ball and the target
                 if (Math.pow(mCurrentX - targetX, 2) + Math.pow(mCurrentY - targetY, 2) <=
                         Math.pow(BALL_RADIUS + TARGET_RADIUS, 2)) {
+
 //                    change score when collide
                     currentSpeedX = 0;
                     currentSpeedY = 0;
                     score += 200;
+
+//                    save score into SharedPreferences
+                    saveScoreInSharedPreferences(score);
+
+
                     confirmFireMissiles();
+
+
 
                 }
 
@@ -258,8 +299,8 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
 
 //                draw ball after fling
-                mCurrentX = mCurrentX + currentSpeedX / 5000 * DURATION_PER_FRAME_IN_MS;
-                mCurrentY = mCurrentY + currentSpeedY / 5000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentX = mCurrentX + currentSpeedX / 4000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentY = mCurrentY + currentSpeedY / 4000 * DURATION_PER_FRAME_IN_MS;
                 drawBall(canvas);
                 postInvalidateDelayed(DURATION_PER_FRAME_IN_MS);
 
@@ -308,8 +349,11 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
         myCanvas = new MyCanvas(this);
 
+
 //        setContentView(R.layout.activity_game_play);
         setContentView(myCanvas);
+
+
 
         gestureDetectorCompat = new GestureDetectorCompat(this, this);
     }
@@ -318,6 +362,22 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     public void confirmFireMissiles() {
         DialogFragment newFragment = new WinDialogFragment(GamePlay.this, score);
         newFragment.show(getFragmentManager(), "win");
+    }
+
+    public void saveScoreInSharedPreferences(int score) {
+        SharedPreferences sharedPref = GamePlay.this.getSharedPreferences("abc",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+
+
+        int temp = sharedPref.getInt("index", 0);
+
+        editor.putInt(Integer.toString(temp), score);
+        editor.commit();
+
+        temp++;
+        editor.putInt("index", temp);
+        editor.commit();
     }
 
 

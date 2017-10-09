@@ -25,7 +25,7 @@ public class WinDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("You Win!")
+        builder.setMessage("You Win! Your score is " + score )
                 .setPositiveButton("Great!", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent(context, HighScore.class);

@@ -20,8 +20,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     float mCurrentX, mCurrentY;
     float firstX, firstY, currentSpeedX, currentSpeedY;
     int score = 0;
-    float obstacleX1 = 200, obstacleY1 = 600;
-    float obstacleX2 = 500, obstacleY2 = 400;
+    float obstacleX1 = 200, obstacleY1 = 700;
+    float obstacleX2 = 550, obstacleY2 = 400;
+    float obstacleX3 = 280, obstacleY3 = 400;
+    float obstacleX4 = 550, obstacleY4 = 700;
 
     MyCanvas myCanvas;
 
@@ -57,6 +59,7 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         Log.d("zjm", "OnScroll event received");
 
+
         mCurrentX -= v;
         mCurrentY -= v1;
         myCanvas.invalidate();
@@ -86,10 +89,13 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         private final int SCORE_LOCATION_Y = 50;
         private Paint obstaclePaint1;
         private Paint obstaclePaint2;
+        private Paint obstaclePaint3;
+        private Paint obstaclePaint4;
 
 
         private final int BALL_RADIUS = 50;
-        private final int OBSTACLE_RADIUS = 80;
+        private final int OBSTACLE_RADIUS_1 = 80;
+        private final int OBSTACLE_RADIUS_2 = 40;
 
         public MyCanvas(Context context) {
             super(context);
@@ -97,10 +103,16 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
             paint.setColor(Color.RED);
 
             obstaclePaint1 = new Paint();
-            obstaclePaint1.setColor(Color.GRAY);
+            obstaclePaint1.setColor(Color.LTGRAY);
 
             obstaclePaint2 = new Paint();
-            obstaclePaint2.setColor(Color.GRAY);
+            obstaclePaint2.setColor(Color.LTGRAY);
+
+            obstaclePaint3 = new Paint();
+            obstaclePaint3.setColor(Color.DKGRAY);
+
+            obstaclePaint4 = new Paint();
+            obstaclePaint3.setColor(Color.DKGRAY);
 
         }
 
@@ -111,9 +123,11 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-//            draw two obstacles
-            drawObstacle(canvas, obstacleX1, obstacleY1, obstaclePaint1);
-            drawObstacle(canvas, obstacleX2, obstacleY2, obstaclePaint2);
+//            draw four obstacles
+            drawObstacle1(canvas, obstacleX1, obstacleY1, obstaclePaint1);
+            drawObstacle1(canvas, obstacleX2, obstacleY2, obstaclePaint2);
+            drawObstacle2(canvas, obstacleX3, obstacleY3, obstaclePaint3);
+            drawObstacle2(canvas, obstacleX4, obstacleY4, obstaclePaint4);
 
             if (currentSpeedX == 0 && currentSpeedY == 0) {
                 drawBall(canvas);
@@ -138,22 +152,75 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                     currentSpeedY = -currentSpeedY;
                 }
 
-//                detect the collision between the ball and the obstacle
+//                detect the collision between the ball and the obstacle light gray
                 if (Math.pow(mCurrentX - obstacleX1, 2) + Math.pow(mCurrentY - obstacleY1, 2) <=
-                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
+//                    change score when collide
+                    score -= 1;
+//                    change direction when collide
+                    currentSpeedX += 2000;
+                    currentSpeedY -= 2000;
                     obstaclePaint1.setColor(Color.CYAN);
                 }
                 if (Math.pow(mCurrentX - obstacleX2, 2) + Math.pow(mCurrentY - obstacleY2, 2) <=
-                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
+//                    change score when collide
+                    score -= 1;
+//                    change direction when collide
+                    currentSpeedX -= 2000;
+                    currentSpeedY += 2000;
                     obstaclePaint2.setColor(Color.CYAN);
                 }
                 if (Math.pow(mCurrentX - obstacleX1, 2) + Math.pow(mCurrentY - obstacleY1, 2) >
-                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
-                    obstaclePaint1.setColor(Color.GRAY);
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
+                    obstaclePaint1.setColor(Color.LTGRAY);
                 }
                 if (Math.pow(mCurrentX - obstacleX2, 2) + Math.pow(mCurrentY - obstacleY2, 2) >
-                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS, 2)) {
-                    obstaclePaint2.setColor(Color.GRAY);
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
+                    obstaclePaint2.setColor(Color.LTGRAY);
+                }
+
+//                detect the collision between the ball and the obstacle dark gray
+
+                if (Math.pow(mCurrentX - obstacleX3, 2) + Math.pow(mCurrentY - obstacleY3, 2) <=
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+//                    change score when collide
+                    score -= 3;
+//                    slow down when collide
+                    currentSpeedX = Math.abs(currentSpeedX) - 1000;
+                    currentSpeedY = Math.abs(currentSpeedY) - 1000;
+//                    stop compelete
+                    if (currentSpeedX < 1000) {
+                        currentSpeedX = 0;
+                    }
+                    if (currentSpeedY < 1000) {
+                        currentSpeedY = 0;
+                    }
+                    obstaclePaint3.setColor(Color.CYAN);
+                }
+                if (Math.pow(mCurrentX - obstacleX4, 2) + Math.pow(mCurrentY - obstacleY4, 2) <=
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+//                    change score when collide
+                    score -= 3;
+//                    slow down when collide
+                    currentSpeedX = Math.abs(currentSpeedX) - 1000;
+                    currentSpeedY = Math.abs(currentSpeedY) - 1000;
+//                    stop compelete
+                    if (currentSpeedX < 1000) {
+                        currentSpeedX = 0;
+                    }
+                    if (currentSpeedY < 1000) {
+                        currentSpeedY = 0;
+                    }
+                    obstaclePaint4.setColor(Color.CYAN);
+                }
+                if (Math.pow(mCurrentX - obstacleX3, 2) + Math.pow(mCurrentY - obstacleY3, 2) >
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+                    obstaclePaint3.setColor(Color.DKGRAY);
+                }
+                if (Math.pow(mCurrentX - obstacleX4, 2) + Math.pow(mCurrentY - obstacleY4, 2) >
+                        Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
+                    obstaclePaint4.setColor(Color.DKGRAY);
                 }
 
 //                display score
@@ -161,8 +228,8 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
 
 //                draw ball after fling
-                mCurrentX = mCurrentX + currentSpeedX / 5000 * DURATION_PER_FRAME_IN_MS;
-                mCurrentY = mCurrentY + currentSpeedY / 5000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentX = mCurrentX + currentSpeedX / 7000 * DURATION_PER_FRAME_IN_MS;
+                mCurrentY = mCurrentY + currentSpeedY / 7000 * DURATION_PER_FRAME_IN_MS;
                 drawBall(canvas);
                 postInvalidateDelayed(DURATION_PER_FRAME_IN_MS);
 
@@ -177,8 +244,12 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
             canvas.drawCircle(mCurrentX, mCurrentY, BALL_RADIUS, paint);
         }
 
-        private void drawObstacle(Canvas canvas, float x, float y, Paint paint) {
-            canvas.drawCircle(x, y, OBSTACLE_RADIUS, paint);
+        private void drawObstacle1(Canvas canvas, float x, float y, Paint paint) {
+            canvas.drawCircle(x, y, OBSTACLE_RADIUS_1, paint);
+        }
+
+        private void drawObstacle2(Canvas canvas, float x, float y, Paint paint) {
+            canvas.drawCircle(x, y, OBSTACLE_RADIUS_2, paint);
         }
 
         @Override

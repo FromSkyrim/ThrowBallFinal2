@@ -35,11 +35,6 @@ public class HighScore extends AppCompatActivity {
 
         SharedPreferences sharedPref = HighScore.this.getSharedPreferences("abc", MODE_PRIVATE);
 
-////        get the score from GamePlay activity
-//        Intent intent = getIntent();
-//        int score = intent.getIntExtra("score", 0);
-
-
 //        add the score into an array
         ArrayList<Integer> arrayList = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {

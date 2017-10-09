@@ -41,12 +41,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     GestureDetectorCompat gestureDetectorCompat;
 
+//    get the accelerometer data
     SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            Log.d("accelerometer", "XXXX" + sensorEvent.values[0]);
-            Log.d("accelerometer", "YYYY" + sensorEvent.values[1]);
-            Log.d("accelerometer", "ZZZZ" + sensorEvent.values[2]);
 
             accelerometerX = sensorEvent.values[0];
             accelerometerY = sensorEvent.values[1];
@@ -86,11 +84,9 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
         return false;
     }
 
+//    make sure the ball follow the finger
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d("zjm", "OnScroll event received");
-
-
         mCurrentX -= v;
         mCurrentY -= v1;
         myCanvas.invalidate();
@@ -102,6 +98,7 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
     }
 
+//    get the verocity
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         currentSpeedX = v;
@@ -203,18 +200,18 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 //                detect the collision between the ball and the obstacle light gray
                 if (Math.pow(mCurrentX - obstacleX1, 2) + Math.pow(mCurrentY - obstacleY1, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
-//                    change score when collide
+//                    gain score when collide
                     score += 5;
-//                    change direction when collide
+//                    change direction when collide, make it hard to stay inside the obstacle
                     currentSpeedX += (accelerometerX*100);
                     currentSpeedY += (accelerometerY*100);
                     obstaclePaint1.setColor(Color.CYAN);
                 }
                 if (Math.pow(mCurrentX - obstacleX2, 2) + Math.pow(mCurrentY - obstacleY2, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_1, 2)) {
-//                    change score when collide
+//                    gain score when collide
                     score += 5;
-//                    change direction when collide
+//                    change direction when collide, make it hard to stay inside the obstacle
                     currentSpeedX += (accelerometerX*100);
                     currentSpeedY += (accelerometerY*100);
                     obstaclePaint2.setColor(Color.CYAN);
@@ -229,30 +226,29 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                 }
 
 //                detect the collision between the ball and the obstacle dark gray
-
                 if (Math.pow(mCurrentX - obstacleX3, 2) + Math.pow(mCurrentY - obstacleY3, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
-//                    change score when collide
+//                    reduce score when collide
                     score -= 7;
-//                    slow down when collide
+//                    change direction when collide, u should try to keep away from the dark gary obstcle if u want to achieve high score
                     currentSpeedX = Math.abs(currentSpeedX) - 1000;
                     currentSpeedY = Math.abs(currentSpeedY) - 1000;
                     obstaclePaint3.setColor(Color.CYAN);
                 }
                 if (Math.pow(mCurrentX - obstacleX4, 2) + Math.pow(mCurrentY - obstacleY4, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
-//                    change score when collide
+//                    reduce score when collide
                     score -= 7;
-//                    slow down when collide
+
                     currentSpeedX = Math.abs(currentSpeedX) - 1000;
                     currentSpeedY = Math.abs(currentSpeedY) - 1000;
                     obstaclePaint4.setColor(Color.CYAN);
                 }
                 if (Math.pow(mCurrentX - obstacleX5, 2) + Math.pow(mCurrentY - obstacleY5, 2) <=
                         Math.pow(BALL_RADIUS + OBSTACLE_RADIUS_2, 2)) {
-//                    change score when collide
+//                    reduce score when collide
                     score -= 7;
-//                    slow down when collide
+
                     currentSpeedX = Math.abs(currentSpeedX) - 1000;
                     currentSpeedY = Math.abs(currentSpeedY) - 1000;
                     obstaclePaint5.setColor(Color.CYAN);
@@ -280,10 +276,10 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
                     currentSpeedY = 0;
                     score += 200;
 
-//                    save score into SharedPreferences
+//                    save score in the SharedPreferences
                     saveScoreInSharedPreferences(score);
 
-
+//                    alert dialog
                     confirmFireMissiles();
 
 
@@ -331,9 +327,6 @@ public class GamePlay extends AppCompatActivity implements GestureDetector.OnGes
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-
-            Log.d("zjm", "OnTouch event received");
-
             gestureDetectorCompat.onTouchEvent(event);
             return true;
 
